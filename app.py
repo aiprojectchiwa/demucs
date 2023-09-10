@@ -9,6 +9,10 @@ def inference(audio):
   os.system("python3 -m demucs.separate -n mdx_extra_q -d cpu test.wav -o out")
   return "./out/mdx_extra_q/test/vocals.wav","./out/mdx_extra_q/test/bass.wav",\
 "./out/mdx_extra_q/test/drums.wav","./out/mdx_extra_q/test/other.wav"
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--api', action="store_true", default=False)
+parser.add_argument("--share", action="store_true", default=False, help="share gradio app")
   
 title = "Demucs"
 description = "Gradio demo for Demucs: Music Source Separation in the Waveform Domain. To use it, simply upload your audio, or click one of the examples to load them. Read more at the links below."
