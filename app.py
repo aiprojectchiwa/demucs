@@ -1,29 +1,67 @@
+Hugging Face's logo
+Hugging Face
+Search models, datasets, users...
+Models
+Datasets
+Spaces
+Docs
+Solutions
+Pricing
+
+
+
+Spaces:
+
+akhaliq
+/
+demucs
+
+
+like
+184
+App
+Files
+Community
+5
+demucs
+/
+app.py
+akhaliq's picture
+akhaliq
+HF STAFF
+Update app.py
+aa628f7
+9 months ago
+raw
+history
+blame
+contribute
+delete
+No virus
+1.29 kB
+import os
 import gradio as gr
-import demucs
+from scipy.io.wavfile import write
 
-# Fungsi untuk memproses audio menggunakan Demucs
-def process_audio(audio_file):
-    # Muat model Demucs
-    model = demucs.load_model()
 
-    # Baca audio dari file yang diunggah
-    audio = gr.inputs.Audio(type="numpy", label="Input")
+def inference(audio):
+  os.makedirs("out", exist_ok=True)
+  write('test.wav', audio[0], audio[1])
+  os.system("python3 -m demucs.separate -n mdx_extra_q -d cpu test.wav -o out")
+  return "./out/mdx_extra_q/test/vocals.wav","./out/mdx_extra_q/test/bass.wav",\
+"./out/mdx_extra_q/test/drums.wav","./out/mdx_extra_q/test/other.wav"
+  
+title = "Demucs"
+description = "Gradio demo for Demucs: Music Source Separation in the Waveform Domain. To use it, simply upload your audio, or click one of the examples to load them. Read more at the links below."
+article = "<p style='text-align: center'><a href='https://arxiv.org/abs/1911.13254' target='_blank'>Music Source Separation in the Waveform Domain</a> | <a href='https://github.com/facebookresearch/demucs' target='_blank'>Github Repo</a></p>"
 
-    # Proses audio menggunakan model Demucs
-    separated_audio = model.separate(audio)
-
-    return separated_audio
-
-# Membuat antarmuka Gradio
-iface = gr.Interface(
-    fn=process_audio,
-    inputs="audio",
-    outputs=gr.outputs.Audio(label="Audio Terpisah"),
-    live=True,
-    title="Demucs Audio Separation",
-    description="Pisahkan sumber audio dengan Demucs."
-)
-
-# Jalankan antarmuka Gradio
-if __name__ == "__main__":
-    iface.launch()
+examples=[['test.mp3']]
+gr.Interface(
+    inference, 
+    gr.inputs.Audio(type="numpy", label="Input"), 
+    [gr.outputs.Audio(type="filepath", label="Vocals"),gr.outputs.Audio(type="filepath", label="Bass"),gr.outputs.Audio(type="filepath", label="Drums"),gr.outputs.Audio(type="filepath", label="Other")],
+    title=title,
+    description=description,
+    article=article,
+    examples=examples
+    ).launch(enable_queue=True)
