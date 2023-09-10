@@ -7,7 +7,7 @@ def process_audio(audio_file):
     model = demucs.load_model()
 
     # Baca audio dari file yang diunggah
-    audio = gr.inputs.Audio(audio_file)
+    audio = gr.inputs.Audio(type="numpy", label="Input")
 
     # Proses audio menggunakan model Demucs
     separated_audio = model.separate(audio)
